@@ -1,0 +1,18 @@
+<launch>
+  <node name="safety_node" pkg="line_follower" type="joy_dead_bot_switch.py">
+    <remap from="cmd_vel" to="cmd_vel_mux/input/teleop"/>
+  </node>
+  <node name="joy" pkg="joy" type="joy_node"/>
+
+
+  <include file="$(find turtlebot_bringup)/launch/3dsensor.launch"/>
+  <include file="$(find turtlebot_bringup)/launch/minimal.launch"/>
+  <node name="line_follower" pkg="line_follower" type="follower_p_comp2_conter.py">
+    <remap from="cmd_vel_mux/input/teleop" to="cmd_vel_safe"/>
+  </node>
+
+  <node name="trafic_light_detactor_node" pkg="line_follower" type="traffic_light.py">
+    <remap from="traffic_light" to="/trafic_light"/>
+  </node>
+
+</launch>
