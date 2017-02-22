@@ -47,7 +47,9 @@ image[:,:,0] = cv2.equalizeHist(image[:,:,0])
 ```
  
 ##### Control Method
-Our robot mainly following the white line and use yellow line as assitance to find white line. It calculate the image moment on white color filter and yellow color fiter if there is enough density of the corresponding color. Then, the centre of white and yellow as well as their errors to the central axis on x-axis could be found. Finally, this error be used in our proportional control of angular speed. Detail code have been attached below,
+Our robot mainly following the white line and use yellow line as assitance to correct the mistaken detaction of white line. It calculate the image moment on white color filter and yellow color fiter if there is enough density of the corresponding color. Then, the centre of white and yellow as well as their errors to the central axis on x-axis could be found. Finally, those errors be used in our proportional control of angular speed. 
+
+Usually, our robot will only see the white line and won't see the yellow line for the most of time, so it will turn sharply to another direction of yellow line if it sees the yellow line. Detail code have been attached below,
 
 ```python
  # use moment to find error to the center
@@ -75,7 +77,6 @@ twist.angular.z = -float(err) / 190
 
 
 ## Result and Discussion
-
-
+As per the result of competition, our robot is able to follow lane smoothly for the most of the time. However, it might fail if there are hard reflactions from the environment lights on the ground. This is because the hard reflactions obstruct the white color filter significant, meanwhile, the yellow color filter won't detact any yellow color. Then, our algorithm detacted a wrong white line position and there is not yellow line position to correct this mistake. So, our algorithm might fail if there are hard reflactions from the environment lights on the ground.
 
 
