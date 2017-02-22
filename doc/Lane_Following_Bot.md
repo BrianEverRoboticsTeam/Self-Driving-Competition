@@ -30,10 +30,48 @@ For the red light detaction, we plan to detact the density of red color in a fra
 ## Approching Details
 
 ##### Image Processing
+Image processing is cricial for our robot's control algorithm since the quality of color filtering is depends on it. We applied equalizaiton process on all color channels (RGB) of the original frame. 
 
+## {pig: image_processing_before_and_after}
 
+As you can see from the images above, his process actually higher the saturation of color in frame. Although this might not seem different by the robot, but it's easier for human to define a color range. The detail code of image processing been attached bwlow,
+
+```python
+# blur image to reduce the noise
+image = cv2.GaussianBlur(image,(13,13),0)
+
+# equalize RGB channels
+image[:,:,2] = cv2.equalizeHist(image[:,:,2])
+image[:,:,1] = cv2.equalizeHist(image[:,:,1])
+image[:,:,0] = cv2.equalizeHist(image[:,:,0])
+```
+ 
 ##### Control Method
+Our robot mainly following the white line and use yellow line as assitance to find white line. It calculate the image moment on white color filter and yellow color fiter if there is enough density of the corresponding color. Then, the centre of white and yellow as well as their errors to the central axis on x-axis could be found. Finally, this error be used in our proportional control of angular speed. Detail code have been attached below,
 
+```python
+ # use moment to find error to the center
+M_white = cv2.moments(mask_white)
+M_yellow = cv2.moments(mask_yellow)
+
+if M_white['m00'] > 10000:
+    err_white = find_central(M_white,image, w, (0,255,255)) - 180
+else:
+    err_white = 0
+
+if M_yellow['m00'] > 200000:
+    err_yellow = find_central(M_yellow,image, w, (255,0,0)) + 400
+else:
+    err_yellow = 0
+
+# send command to robot based on the err
+err = err_white
+if(err_yellow!=0):
+    err = err_yellow
+
+twist.linear.x = 0.6
+twist.angular.z = -float(err) / 190
+```
 
 
 ## Result and Discussion
